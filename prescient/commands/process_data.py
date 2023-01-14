@@ -23,25 +23,25 @@ def read_data(args):
     path: path to csv or rds file of processed scRNA-seq dataset.
     meta: path to metadata csv.
     """
-    ext = os.path.splitext(args.data_path)[1]
+#    ext = os.path.splitext(args.data_path)[1]
     # load in expression dataframe
-    if ext == ".csv" or ext == ".txt" or ext == ".tsv":
-        if args.meta_path == None:
-            raise ValueError("Must provide path to metadata with timepoint and ")
-        expr = pd.read_csv(args.data_path, index_col=0)
-        meta = pd.read_csv(args.meta_path)
-        genes = expr.columns
-        expr = expr.to_numpy()
-        tps = meta[args.tp_col].values.astype(int)
-        celltype = meta[args.celltype_col].values
+ #   if ext == ".csv" or ext == ".txt" or ext == ".tsv":
+ #       if args.meta_path == None:
+ #           raise ValueError("Must provide path to metadata with timepoint and ")
+    expr = pd.read_csv(args.data_path)#, index_col=0)
+ #       meta = pd.read_csv(args.meta_path)
+    genes = expr.columns
+    expr = expr.to_numpy()
+ #       tps = meta[args.tp_col].values.astype(int)
+ #       celltype = meta[args.celltype_col].values
 
     # todo: implement Scanpy anndata functionality
-    if ext == ".h5ad":
-        raise NotImplementedError
+#    if ext == ".h5ad":
+#        raise NotImplementedError
 
     # todo: implement Seurat object functionality
-    if ext == ".rds":
-        raise NotImplementedError
+#    if ext == ".rds":
+#        raise NotImplementedError
 
     # transformations
     scaler = sklearn.preprocessing.StandardScaler()
@@ -52,13 +52,14 @@ def read_data(args):
     xp = pca.fit_transform(x)
     xu = um.fit_transform(xp)
 
-    y = list(np.sort(np.unique(tps)))
+#    y = list(np.sort(np.unique(tps)))
 
-    x_ = [torch.from_numpy(x[(meta[args.tp_col] == d),:]).float() for d in y]
-    xp_ = [torch.from_numpy(xp[(meta[args.tp_col] == d),:]).float() for d in y]
-    xu_ = [torch.from_numpy(xu[(meta[args.tp_col] == d),:]).float() for d in y]
+#    x_ = [torch.from_numpy(x[(meta[args.tp_col] == d),:]).float() for d in y]
+#    xp_ = [torch.from_numpy(xp[(meta[args.tp_col] == d),:]).float() for d in y]
+#    xu_ = [torch.from_numpy(xu[(meta[args.tp_col] == d),:]).float() for d in y]
 
-    return expr, x_, xp_, xu_, y, pca, um, tps, celltype, genes
+#    return expr, x_, xp_, xu_, y, pca, um, tps, celltype, genes
+    return expr, pca, um, genes
 
 def create_parser():
     parser = argparse.ArgumentParser()
@@ -68,8 +69,8 @@ def create_parser():
     help="Path to dataframe of expression values.")
     parser.add_argument('-o', '--out_dir', type=str, required=True,
     help="Path to output directory to store final PRESCIENT data file.")
-    parser.add_argument('-m', '--meta_path', type=str, required=False,
-    help="Path to metadata containing timepoint and celltype annotation data.")
+#    parser.add_argument('-m', '--meta_path', type=str, required=False,
+#    help="Path to metadata containing timepoint and celltype annotation data.")
 
     # column names
     parser.add_argument('--tp_col', type=str, required=False,
