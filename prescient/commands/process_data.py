@@ -59,7 +59,7 @@ def read_data(args):
 #    xu_ = [torch.from_numpy(xu[(meta[args.tp_col] == d),:]).float() for d in y]
 
 #    return expr, x_, xp_, xu_, y, pca, um, tps, celltype, genes
-    return expr, pca, um, genes
+    return expr,x , xp , xu, pca, um, genes
 
 def create_parser():
     parser = argparse.ArgumentParser()
@@ -73,16 +73,16 @@ def create_parser():
 #    help="Path to metadata containing timepoint and celltype annotation data.")
 
     # column names
-    parser.add_argument('--tp_col', type=str, required=False,
-    help="Column name of timepoint feature in metadate provided as string.")
+#    parser.add_argument('--tp_col', type=str, required=False,
+#    help="Column name of timepoint feature in metadate provided as string.")
     parser.add_argument('--celltype_col', type=str, required=False,
     help="Column name of celltype feature in metadata provided as string.")
 
     # dimensionality reduction growth_parameters
-    parser.add_argument('--num_pcs', type=int, default=50, required=False,
-    help="Define number of PCs to compute for input to training.")
-    parser.add_argument('--num_neighbors_umap', type=int, default=10, required=False,
-    help="Define number of neighbors for UMAP trasformation (UMAP used only for visualization.)")
+    parser.add_argument('--num_pcs', type=int, default=10, required=False,
+    help="Define number of PCs to compute for input to training.") #default=50 =>10
+    parser.add_argument('--num_neighbors_umap', type=int, default=5, required=False,
+    help="Define number of neighbors for UMAP trasformation (UMAP used only for visualization.)")#defult=30
 
     # proliferation scores
     parser.add_argument('--growth_path', type=str,
@@ -106,10 +106,11 @@ def main(args):
         |- celltype: vector of celltype labels
     """
     # throw early errors
-    if "csv" in str(args.data_path).split('/')[-1] and (args.meta_path == None or args.tp_col == None or args.celltype_col == None):
-        raise ValueError("If csv/tsv/txt provided, you must provide a path to metadata along with column name designations.")
+#    if "csv" in str(args.data_path).split('/')[-1] and (args.meta_path == None or args.tp_col == None or args.celltype_col == None):
+#        raise ValueError("If csv/tsv/txt provided, you must provide a path to metadata along with column name designations.")
 
-    expr, x, xp, xu, y, pca, um, tps, celltype, genes = read_data(args)
+#    expr, x, xp, xu, y, pca, um, tps, celltype, genes = read_data(args)
+    expr,x , xp , xu, pca, um, genes = read_data(args)
 
     w_pt = torch.load(args.growth_path)
     w = w_pt["w"]
@@ -119,12 +120,12 @@ def main(args):
     torch.save({
      "data": expr,
      "genes": genes,
-     "celltype": celltype,
-     "tps": tps,
-     "x":x,
+#     "celltype": celltype,
+#     "tps": tps,
+#     "x":x,
      "xp":xp,
      "xu": xu,
-     "y": y,
+#     "y": y,
      "pca": pca,
      "um":um,
      "w":w
