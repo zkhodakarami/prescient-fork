@@ -112,8 +112,8 @@ def main(args):
 #    expr, x, xp, xu, y, pca, um, tps, celltype, genes = read_data(args)
     expr,x , xp , xu, pca, um, genes = read_data(args)
 
-    w_pt = torch.load(args.growth_path)
-    w = w_pt["w"]
+#    w_pt = torch.load(args.growth_path)
+#    w = w_pt["w"]
 
 
     # write as a torch object
@@ -128,7 +128,7 @@ def main(args):
 #     "y": y,
      "pca": pca,
      "um":um,
-     "w":w
+#     "w":w
      }, args.out_dir+"data.pt")
 
 if __name__ == '__main__':
