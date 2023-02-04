@@ -13,7 +13,7 @@ from collections import OrderedDict
 from types import SimpleNamespace
 from time import strftime, localtime
 
-import prescient.train as train
+import train.prescient as train
 
 
 def create_parser():
@@ -116,7 +116,7 @@ def train_init(args):
     # data
     data_pt = load_data(args)
     x = data_pt["xp"]
-    y = data_pt["y"]
+#    y = data_pt["y"]
     weight = data_pt["w"]
     if args.weight_name != None:
         a.weight = args.weight_name
@@ -135,17 +135,18 @@ def train_init(args):
     config = init_config(a)
 
     config.x_dim = x[0].shape[-1]
-    config.t = y[-1] - y[0]
+#    config.t = y[-1] - y[0]
 
-    config.start_t = y[0]
-    config.train_t = y[1:]
-    y_start = y[config.start_t]
-    y_ = [y_ for y_ in y if y_ > y_start]
+#    config.start_t = y[0]
+#    config.train_t = y[1:]
+#    y_start = y[config.start_t]
+#    y_ = [y_ for y_ in y if y_ > y_start]
 
-    w_ = weight[config.start_t]
-    w = {(y_start, yy): torch.from_numpy(np.exp((yy - y_start)*w_)) for yy in y_}
+#    w_ = weight[config.start_t]
+#    w = {(y_start, yy): torch.from_numpy(np.exp((yy - y_start)*w_)) for yy in y_}
 
-    return x, y, w, config
+#    return x, y, w, config
+    return x, config
 
 def main(args):
     train.run(args, train_init)
