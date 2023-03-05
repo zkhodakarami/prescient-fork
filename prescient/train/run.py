@@ -21,8 +21,9 @@ def run(args, init_task):
     device, kwargs = init(args)
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-
-    x, y, w, config = init_task(args)
+    y = [1,2,3,4,5,6,7]
+#    x, y, w, config = init_task(args)
+    x, config = init_task(args)
 
     # ---- model
 
@@ -40,6 +41,7 @@ def run(args, init_task):
     torch.save(config.__dict__, config.config_pt)
 
     if args.pretrain:
+      
 
         if os.path.exists(config.done_log):
 
@@ -48,15 +50,27 @@ def run(args, init_task):
         else:
 
             model.to(device)
-            x_last = x[config.train_t[-1]].to(device) # use the last available training point
+            #config.train_t = [1,2,3,4,5,6,7] => y = [1,2,3,4,5,6,7]
+            
+            print(x[y])
+            if ((len(y[-1:])) ==0):
+              x_last = x[y[-1:]] # use the last available training point
+            else:
+              x_last = x[y] # use the last available training point
+            
+            x_last = torch.from_numpy(x_last)
+
+
+
             optimizer = optim.SGD(list(model.parameters()), lr = config.pretrain_lr)
 
             pbar = tqdm.tqdm(range(config.pretrain_epochs))
-            for epoch in pbar:
+            for epoch in pbar: 
 
                 pp, _ = p_samp(x_last, config.ns)
 
-                dt = config.t / config.pretrain_burnin
+#                dt = config.t / config.pretrain_burnin
+                dt = 0.14
                 pp, pos_fv, neg_fv = fit_regularizer(x_last, pp,
                     config.pretrain_burnin, dt, config.pretrain_sd,
                     model, device)
@@ -90,7 +104,8 @@ def run(args, init_task):
             optimizer.zero_grad()
 
             pbar = tqdm.tqdm(range(config.train_epochs))
-            x_last = x[config.train_t[-1]].to(device) # use the last available training point
+
+            x_last = x[y[-1]] # use the last available training point
             # fit on time points
 
             best_train_loss_xy = np.inf
@@ -101,7 +116,7 @@ def run(args, init_task):
                 losses_xy = []
                 config.train_epoch = epoch
 
-                for j in config.train_t:
+                for j in y:
 
                     t_cur = j
                     t_prev = config.start_t
@@ -139,7 +154,8 @@ def run(args, init_task):
 
                     pp, _ = p_samp(x_last, config.ns)
 
-                    dt = config.t / config.train_burnin
+#                    dt = config.t / config.train_burnin
+                    dt = 0.07
                     pp, pos_fv, neg_fv = fit_regularizer(x_last, pp,
                         config.train_burnin, dt, config.train_sd,
                         model, device)
