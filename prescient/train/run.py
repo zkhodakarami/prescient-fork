@@ -54,11 +54,11 @@ def run(args, init_task):
             
             print(x[y])
             if ((len(y[-1:])) ==0):
-              x_last = x[y[-1:]] # use the last available training point
-            else:
-              x_last = x[y] # use the last available training point
+   #           x_last = x[y[-1:]] # use the last available training point
+   #         else:
+    #          x_last = x[y] # use the last available training point
             
-            x_last = torch.from_numpy(x_last)
+            x_last = torch.from_numpy(x_last).to(device)
 
 
 
@@ -107,6 +107,8 @@ def run(args, init_task):
 
             x_last = x[y[-1]] # use the last available training point
             # fit on time points
+            x_last = torch.from_numpy(x_last).to(device)
+
 
             best_train_loss_xy = np.inf
             log_handle = open(config.train_log, 'w')
